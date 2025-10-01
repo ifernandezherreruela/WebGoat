@@ -1,32 +1,29 @@
-name: Prueba snyk
+name: Snyk Prueba
 
 on:
   push:
-    branches:
-      - main
+    branches: [main]
   pull_request:
-    branches:
-      - main
+    branches: [main]
 
 jobs:
-  snyk:
+  snyk-scan:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout
+      - name: Checkout repositorio
         uses: actions/checkout@v3
 
       - name: Instalar node
         uses: actions/setup-node@v4
         with:
-          node-version: '18' # Cambia según la versión que uses
+          node-version: '18'
 
-      - name: Instalar dependencias
-        run: npm install
+      - name: Instalar snyk
+        run: npm install -g snyk
 
-      - name: Ejecutar snyk
-        uses: snyk/actions/node@v1
-        env:
-          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-        with:
-          command: test
+      - name: Autenticarse
+        run: snyk auth ${{ secrets.SNYK_TOKEN }}
+
+      - name: Lanzar snyk
+        run: snyk test
