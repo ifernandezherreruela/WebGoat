@@ -1,0 +1,32 @@
+name: Prueba snyk
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  snyk:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Instalar node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18' # Cambia según la versión que uses
+
+      - name: Instalar dependencias
+        run: npm install
+
+      - name: Ejecutar snyk
+        uses: snyk/actions/node@v1
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        with:
+          command: test
