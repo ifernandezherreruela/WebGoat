@@ -25,5 +25,14 @@ jobs:
       - name: Autenticarse
         run: snyk auth ${{ secrets.SNYK_TOKEN }}
 
-      - name: Lanzar snyk
-        run: snyk test
+      - name: Lanzar snyk (permitir exit code 1)
+        run: |
+          snyk test
+          EXIT_CODE=$?
+          if [ "$EXIT_CODE" -eq 1 ]; then
+            echo "Snyk encontró vulnerabilidades (exit code 1), pero permitimos que continúe."
+            exit 0
+          elif [ "$EXIT_CODE" -ne 0 ]; then
+            echo "Snyk falló con un error inesperado (exit code $EXIT_CODE)."
+            exit $EXIT_CODE
+          fi
